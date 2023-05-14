@@ -17,7 +17,7 @@ lavender_rectangle = LawnRectangle(
 middle_rectangle = LawnRectangle(
     location=Location(x=13.5, y=5.0),
     width=10.5,
-    height=10.5,
+    height=10,
 )
 trench_rectangle = LawnRectangle(
     location=Location(x=24.0, y=0.0),
@@ -30,8 +30,6 @@ rectangles = [lavender_rectangle, middle_rectangle, trench_rectangle]
 walkway_spigot = Spigot(location=Location(29.0, -20.0))
 side_spigot = Spigot(location=Location(3.0, 0))
 
-spigots = [walkway_spigot, side_spigot]
-
 hydrangea_hose = Hose(
     length=25.0,
 )
@@ -40,14 +38,14 @@ tulip_hose = Hose(
 )
 hydrangea_sprinkler = Sprinkler(
     location=Location(x=29.0, y=8.0),
-    spray_arc=90.0,
+    spray_arc=190.0,
     spray_direction=180,
-    spray_radius=10.0,
+    spray_radius=8.5,
 )
 
 tulip_sprinkler = Sprinkler(
     location=Location(x=15.0, y=15.0),
-    spray_arc=90.0,
+    spray_arc=190.0,
     spray_direction=270,
     spray_radius=10.0,
 )
@@ -57,8 +55,38 @@ hydrangea_sprinkler.connect(sink=tulip_hose)
 tulip_hose.connect(sink=tulip_sprinkler)
 
 
-hoses = [hydrangea_hose, tulip_hose]
-sprinklers = [hydrangea_sprinkler, tulip_sprinkler]
+little_lavender_hose = Hose(
+    length=10.0,
+)
+corner_sprinkler = Sprinkler(
+    location=Location(x=0.0, y=0.0),
+    spray_arc=90.0,
+    spray_direction=45,
+    spray_radius=14.5,
+)
+side_spigot.connect(sink=little_lavender_hose)
+little_lavender_hose.connect(sink=corner_sprinkler)
+lavender_hose = Hose(
+    length=25.0,
+)
+lavender_sprinkler = Sprinkler(
+    location=Location(x=0.0, y=15.0),
+    spray_arc=90,
+    spray_direction=315,
+    spray_radius=14.0,
+)
+corner_sprinkler.connect(sink=lavender_hose)
+lavender_hose.connect(sink=lavender_sprinkler)
+
+
+spigots = [walkway_spigot, side_spigot]
+hoses = [hydrangea_hose, tulip_hose, little_lavender_hose, lavender_hose]
+sprinklers = [
+    hydrangea_sprinkler,
+    tulip_sprinkler,
+    corner_sprinkler,
+    lavender_sprinkler,
+]
 
 lawn = Lawn(
     rectangles=rectangles,

@@ -17,3 +17,4 @@ class Sprinkler(
     spray_radius: float
     sink: WaterSink = None
     source: WaterSource = None
+    water_flow_rate: float = 40.0

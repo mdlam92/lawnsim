@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.transforms import Affine2D
+import numpy as np
 
 from hose import Hose
 from lawn import Lawn
@@ -129,6 +130,12 @@ class LawnSimulator:
         # Plot sprinklers and their spray arcs
         for sprinkler in self.lawn.sprinklers:
             ax.plot(sprinkler.location.x, sprinkler.location.y, "ro")
+            total_area = (
+                np.pi * sprinkler.spray_radius**2 * (sprinkler.spray_arc / 360.0)
+            )
+            water_per_area = sprinkler.water_flow_rate / total_area
+            alpha_value = water_per_area  # Adjust this calculation based on your needs
+
             sprinkler_patch = patches.Wedge(
                 (sprinkler.location.x, sprinkler.location.y),
                 sprinkler.spray_radius,
@@ -136,8 +143,9 @@ class LawnSimulator:
                 # theta1 (start angle)
                 sprinkler.spray_direction + sprinkler.spray_arc / 2,
                 # theta2 (end angle)
-                fill=False,
+                fill=True,
                 color="blue",
+                alpha=alpha_value,
             )
             ax.add_patch(sprinkler_patch)
 
@@ -145,6 +153,7 @@ class LawnSimulator:
         ax.set_aspect("equal")
 
         # Show the plot
+        plt.savefig("lawn_simulation.png")
         plt.show()
 
 

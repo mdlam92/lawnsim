@@ -39,16 +39,18 @@ tulip_hose = Hose(
 )
 hydrangea_sprinkler = Sprinkler(
     location=Location(x=29.0, y=8.0),
-    spray_arc=190.0,
+    spray_arc=200.0,
     spray_direction=180,
-    spray_radius=8.5,
+    spray_radius=8.0,
+    water_flow_rate=26.66666666666666,
 )
 
 tulip_sprinkler = Sprinkler(
-    location=Location(x=15.0, y=15.0),
-    spray_arc=190.0,
-    spray_direction=270,
-    spray_radius=10.0,
+    location=Location(x=12.0, y=15.0),
+    spray_arc=70,
+    spray_direction=330,
+    spray_radius=12.5,
+    water_flow_rate=26.66666666666666,
 )
 walkway_spigot.connect(sink=hydrangea_hose)
 hydrangea_hose.connect(sink=hydrangea_sprinkler)
@@ -60,34 +62,35 @@ little_lavender_hose = Hose(
     length=10.0,
 )
 corner_sprinkler = Sprinkler(
-    location=Location(x=6.5, y=7.5),
+    location=Location(x=6.5, y=8.0),
     spray_arc=360.0,
     spray_direction=45,
-    spray_radius=9.0,
+    spray_radius=8.5,
     water_flow_rate=80.0,
 )
 side_spigot.connect(sink=little_lavender_hose)
 little_lavender_hose.connect(sink=corner_sprinkler)
-# lavender_hose = Hose(
-#     length=25.0,
-# )
-# lavender_sprinkler = Sprinkler(
-#     location=Location(x=0.0, y=15.0),
-#     spray_arc=90,
-#     spray_direction=315,
-#     spray_radius=14.0,
-# )
-# corner_sprinkler.connect(sink=lavender_hose)
-# lavender_hose.connect(sink=lavender_sprinkler)
+lavender_hose = Hose(
+    length=25.0,
+)
+lavender_sprinkler = Sprinkler(
+    location=Location(x=0.0, y=15.0),
+    spray_arc=55,
+    spray_direction=335,
+    spray_radius=13.0,
+    water_flow_rate=26.66666666666666,
+)
+tulip_sprinkler.connect(sink=lavender_hose)
+lavender_hose.connect(sink=lavender_sprinkler)
 
 
 spigots = [walkway_spigot, side_spigot]
-hoses = [hydrangea_hose, tulip_hose, little_lavender_hose]  # , lavender_hose]
+hoses = [hydrangea_hose, tulip_hose, little_lavender_hose, lavender_hose]
 sprinklers = [
     hydrangea_sprinkler,
     tulip_sprinkler,
     corner_sprinkler,
-    # lavender_sprinkler,
+    lavender_sprinkler,
 ]
 
 lawn = Lawn(

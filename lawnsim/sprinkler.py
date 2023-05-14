@@ -18,3 +18,13 @@ class Sprinkler(
     sink: WaterSink = None
     source: WaterSource = None
     water_flow_rate: float = 40.0
+
+
+@dataclass
+class OscillatingSprinkler(WaterSink):
+    location: Location
+    orientation: float
+    width: float
+    length: float
+    source: WaterSource = None
+    water_flow_rate: float = 40.0

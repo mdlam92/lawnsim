@@ -9,7 +9,7 @@ from lawn import Lawn
 from lawn_area import LawnRectangle
 from location import Location
 from spigot import Spigot
-from sprinkler import Sprinkler
+from sprinkler import Sprinkler, OscillatingSprinkler
 
 
 lavender_rectangle = LawnRectangle(
@@ -42,15 +42,15 @@ hydrangea_sprinkler = Sprinkler(
     spray_arc=200.0,
     spray_direction=180,
     spray_radius=8.0,
-    water_flow_rate=26.66666666666666,
+    water_flow_rate=40,
 )
 
 tulip_sprinkler = Sprinkler(
     location=Location(x=12.0, y=15.0),
-    spray_arc=70,
-    spray_direction=330,
+    spray_arc=190,
+    spray_direction=270,
     spray_radius=12.5,
-    water_flow_rate=26.66666666666666,
+    water_flow_rate=40,
 )
 walkway_spigot.connect(sink=hydrangea_hose)
 hydrangea_hose.connect(sink=hydrangea_sprinkler)
@@ -58,40 +58,23 @@ hydrangea_sprinkler.connect(sink=tulip_hose)
 tulip_hose.connect(sink=tulip_sprinkler)
 
 
-little_lavender_hose = Hose(
-    length=10.0,
-)
-corner_sprinkler = Sprinkler(
-    location=Location(x=6.5, y=8.0),
-    spray_arc=360.0,
-    spray_direction=45,
-    spray_radius=8.5,
+lavender_hose = Hose(length=25.0)
+tulip_sprinkler.connect(sink=lavender_hose)
+
+little_lavender_hose = Hose(length=10.0)
+side_spigot.connect(sink=little_lavender_hose)
+oscillating_sprinkler = OscillatingSprinkler(
+    location=Location(x=8.0, y=10.0),
+    orientation=0.0,
+    width=15.0,
+    length=8.0,
     water_flow_rate=80.0,
 )
-side_spigot.connect(sink=little_lavender_hose)
-little_lavender_hose.connect(sink=corner_sprinkler)
-lavender_hose = Hose(
-    length=25.0,
-)
-lavender_sprinkler = Sprinkler(
-    location=Location(x=0.0, y=15.0),
-    spray_arc=55,
-    spray_direction=335,
-    spray_radius=13.0,
-    water_flow_rate=26.66666666666666,
-)
-tulip_sprinkler.connect(sink=lavender_hose)
-lavender_hose.connect(sink=lavender_sprinkler)
-
+little_lavender_hose.connect(sink=oscillating_sprinkler)
 
 spigots = [walkway_spigot, side_spigot]
-hoses = [hydrangea_hose, tulip_hose, little_lavender_hose, lavender_hose]
-sprinklers = [
-    hydrangea_sprinkler,
-    tulip_sprinkler,
-    corner_sprinkler,
-    lavender_sprinkler,
-]
+hoses = [hydrangea_hose, tulip_hose, little_lavender_hose]
+sprinklers = [hydrangea_sprinkler, tulip_sprinkler, oscillating_sprinkler]
 
 lawn = Lawn(
     rectangles=rectangles,
@@ -133,25 +116,61 @@ class LawnSimulator:
 
         # Plot sprinklers and their spray arcs
         for sprinkler in self.lawn.sprinklers:
-            ax.plot(sprinkler.location.x, sprinkler.location.y, "ro")
-            total_area = (
-                np.pi * sprinkler.spray_radius**2 * (sprinkler.spray_arc / 360.0)
-            )
-            water_per_area = sprinkler.water_flow_rate / total_area
-            alpha_value = water_per_area  # Adjust this calculation based on your needs
+            if isinstance(sprinkler, OscillatingSprinkler):
+                # For oscillating sprinklers, plot a rectangle
+                t = (
+                    Affine2D().rotate_deg_around(
+                        sprinkler.location.x,
+                        sprinkler.location.y,
+                        sprinkler.orientation,
+                    )
+                    + ax.transData
+                )
+                rectangle = patches.Rectangle(
+                    (
+                        sprinkler.location.x - sprinkler.width / 2,
+                        sprinkler.location.y - sprinkler.length / 2,
+                    ),
+                    sprinkler.width,
+                    sprinkler.length,
+                    fill=True,
+                    color="blue",
+                    alpha=0.3,
+                    transform=t,
+                )
+                ax.add_patch(rectangle)
 
-            sprinkler_patch = patches.Wedge(
-                (sprinkler.location.x, sprinkler.location.y),
-                sprinkler.spray_radius,
-                sprinkler.spray_direction - sprinkler.spray_arc / 2,
-                # theta1 (start angle)
-                sprinkler.spray_direction + sprinkler.spray_arc / 2,
-                # theta2 (end angle)
-                fill=True,
-                color="blue",
-                alpha=alpha_value,
-            )
-            ax.add_patch(sprinkler_patch)
+                # Add a small rectangle to represent the sprinkler
+                sprinkler_marker = patches.Rectangle(
+                    (sprinkler.location.x - 0.25, sprinkler.location.y - 1.25),
+                    0.5,
+                    2.5,
+                    fill=True,
+                    color="red",
+                )
+                ax.add_patch(sprinkler_marker)
+            else:
+                ax.plot(sprinkler.location.x, sprinkler.location.y, "ro")
+                total_area = (
+                    np.pi * sprinkler.spray_radius**2 * (sprinkler.spray_arc / 360.0)
+                )
+                water_per_area = sprinkler.water_flow_rate / total_area
+                alpha_value = (
+                    water_per_area  # Adjust this calculation based on your needs
+                )
+
+                sprinkler_patch = patches.Wedge(
+                    (sprinkler.location.x, sprinkler.location.y),
+                    sprinkler.spray_radius,
+                    sprinkler.spray_direction - sprinkler.spray_arc / 2,
+                    # theta1 (start angle)
+                    sprinkler.spray_direction + sprinkler.spray_arc / 2,
+                    # theta2 (end angle)
+                    fill=True,
+                    color="blue",
+                    alpha=alpha_value,
+                )
+                ax.add_patch(sprinkler_patch)
 
         # Set the aspect of the plot to match the real-world aspect
         ax.set_aspect("equal")

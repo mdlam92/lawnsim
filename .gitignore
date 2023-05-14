@@ -1,0 +1,15 @@
+venv/
+.idea/
+**/__pycache__/
+logs/
+conf/config.json
+conf/ecus/openocd_cfgs/*
+*.key
+*.crt
+*.csr
+*.env
+dist/
+.coverage
+coverage.xml
+version
+openapi.json
